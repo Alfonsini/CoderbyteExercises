@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -32,15 +33,15 @@ namespace CSharpJSONCleaning
 
     private async static Task<string> GetJSONAsync()
     {
-      HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://coderbyte.com/api/challenges/json/json-cleaning");
-
       string content = "";
 
-      using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-      using (Stream stream = response.GetResponseStream())
-      using (StreamReader reader = new StreamReader(stream))
+      using (HttpClient client = new HttpClient())
+      using (HttpResponseMessage response = await client.GetAsync("https://coderbyte.com/api/challenges/json/json-cleaning"))
       {
-        content = await reader.ReadToEndAsync();
+        if (response.IsSuccessStatusCode)
+        {
+          content = await response.Content.ReadAsStringAsync();
+        }
       }
 
       return content;
